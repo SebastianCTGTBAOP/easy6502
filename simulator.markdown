@@ -7,174 +7,538 @@ layout: basic
 To use the disassembler, click **Assemble**, then **Disassemble**. [Back to Easy 6502](index.html).
 
 {% include start.html %}
-start:
-  jsr init
+Initialise:
+	ldx #$01
+	stx $02
+	define text_colour $02
+	lda text_colour
+	
+	ldx #$00
+	stx $00
+	ldx #$02
+	stx $01
+	ldx #0
 
-loop:
-  jsr drawMap
-  jsr genMap
-  jmp loop
+DrawText:
+	jsr DrawA
+	jsr DrawB
+	jsr DrawC
+	jsr DrawD
+	jsr DrawE
+	jsr DrawF
+	jsr DrawG
+	jsr SetLine2
+	jsr DrawH
+	jsr DrawI
+	jsr DrawJ
+	jsr DrawK
+	jsr DrawA
+	jsr DrawA
+	jsr SetLine3
+	jsr DrawA
+	jsr DrawA
+	jsr DrawA
+	jsr DrawA
+	jsr DrawA
+	jsr DrawA
+	jsr DrawA
+	jsr SetLine4
+	jsr DrawA
+	jsr DrawA
+	jsr DrawA
+	jsr SetLine5
+	jsr DrawA
+	jsr DrawA
+	jsr DrawA
 
-testMemory:
-  rts
-  pha
-  txa
-  pha
+	BRK
 
-  lda #0
-  ldx $10
-  sta $500,x
-  ldx $78
-  lda #1
-  sta $500,x
-  stx $10
+DrawA:
+	jsr Draw3Dot
+	jsr CNewLine
+	jsr Draw2DotMSpace
+	jsr CNewLine
+	jsr Draw3Dot
+	jsr CNewLine
+	jsr Draw2DotMSpace
+	jsr CNewLine
+	jsr Draw2DotMSpace
 
-  lda #0
-  ldx $11
-  sta $500,x
-  ldx $79
-  lda #3
-  sta $500,x
-  stx $11
+	jsr ReadjustFor3
 
-  lda #0
-  ldx $12
-  sta $500,x
-  ldx $7a
-  lda #4
-  sta $500,x
-  stx $12
+	rts
 
-  lda #0
-  ldx $13
-  sta $500,x
-  ldx $7b
-  lda #4
-  sta $500,x
-  stx $13
+DrawB:
+	jsr Draw3Dot
+	jsr CNewLine
+	jsr Draw2DotMSpace
+	jsr CNewLine
+	jsr Draw4Dot
+	jsr CNewLine
+	jsr Draw2DotM2Space
+	jsr CNewLine
+	jsr Draw4Dot
+	
+	jsr ReadjustFor4
 
-  pla
-  tax
-  pla
+	rts
 
-  rts
+DrawC:
+	jsr Draw3Dot
+	jsr CNewLine
+	jsr DrawLeftDot
+	jsr CNewLine
+	jsr DrawLeftDot
+	jsr CNewLine
+	jsr DrawLeftDot
+	jsr CNewLine
+	jsr Draw3Dot
 
-init:
-  ldx #0
-  lda walls
+	jsr ReadjustFor3
 
-;draw exactly 256 pixels of wall at top and bottom
-drawinitialwalls:
-  sta $200,x ;draw the top bit of wall
-  sta $400,x ;draw the bottom bit of wall
-  dex        ;count down from 0
-  cpx #0     ;until we hit 0
-  bne drawinitialwalls
+	rts
 
-  lda #$10
-  sta $80
-  ldx #$0f
+DrawD:
+	jsr Draw4Dot
+	jsr CNewLine
+	jsr DrawSpaceDotSpaceDot
+	jsr CNewLine
+	jsr DrawSpaceDotSpaceDot
+	jsr CNewLine
+	jsr DrawSpaceDotSpaceDot
+	jsr CNewLine
+	jsr Draw4Dot
 
-;fill $81-$90 with $10 (initial wall offset)
-setinitialwalloffsets:
-  sta $81,x  ; target
-  dex
-  bpl setinitialwalloffsets
-  rts
+	jsr ReadjustFor4
 
-;--
+	rts
 
-drawMap:
-  lda #$00
-  sta $78
-  lda #$20
-  sta $79
-  lda #$c0
-  sta $7a
-  lda #$e0
-  sta $7b
+DrawE:
+	jsr Draw3Dot
+	jsr CNewLine
+	jsr DrawLeftDot
+	jsr CNewLine
+	jsr Draw3Dot
+	jsr CNewLine
+	jsr DrawLeftDot
+	jsr CNewLine
+	jsr Draw3Dot
 
-  ldx #$0f
-drawLoop:
-  lda $81,x
-  sta $82,x ;shift wall offsets along
+	jsr ReadjustFor3
 
-  tay
-  sty $02      ;store current wall offset in $02
-  lda pixels,y ;lookup current wall offset in pixels
-  sta $00      ;and store it in $00
-  iny
-  lda pixels,y ;lookup current wall offset + 1 in pixels
-  sta $01      ;and store it in $01
-               ;$00 now points to a two-byte pixel memory location
+	rts
 
-  lda walls
-  ldy $78      ;top edge of wall
-  sta ($00),y
-  iny
-  sta ($00),y
+DrawF:
+	jsr Draw3Dot
+	jsr CNewLine
+	jsr DrawLeftDot
+	jsr CNewLine
+	jsr Draw3Dot
+	jsr CNewLine
+	jsr DrawLeftDot
+	jsr CNewLine
+	jsr DrawLeftDot
 
-  ldy $7b
-  sta ($00),y ;bottom edge of wall
-  iny
-  sta ($00),y
+	jsr ReadjustFor3
 
-  ldy $79     ;top edge of tunnel
-  lda #0      ;black for tunnel
-  sta ($00),y
-  iny
-  sta ($00),y
+	rts
 
-  ldy $7a
-  sta ($00),y ;bottom edge of tunnel
-  iny
-  sta ($00),y
+DrawG:
+	jsr Draw4Dot
+	jsr CNewLine
+	jsr DrawLeftDot
+	jsr CNewLine
+	jsr DrawDotSpaceDotDot
+	jsr CNewLine
+	jsr Draw2DotM2Space
+	jsr CNewLine
+	jsr Draw4Dot
 
-  ; move offsets right two pixels
-  inc $78
-  inc $79
-  inc $7a
-  inc $7b
-  inc $78
-  inc $79
-  inc $7a
-  inc $7b
-  dex
-  bpl drawLoop
-  rts
+	jsr ReadjustFor4
 
-;---
+	rts
 
-genMap:
-  lda $80 ;$80 is next wall inflection point
-  cmp $81 ;$81 is next wall offset
-  beq newinflectionpoint
-  lda $80
-  clc
-  sbc $81 ;is next wall offset above or below inflection point?
-  bpl raisewalls
-  bmi lowerwalls
-newinflectionpoint:
-  lda $fe
-  and #$f ;make 4-bit
-  asl     ;double (make even number)
-  sta $80 ;set $80 to random value
-  rts
-lowerwalls:
-  dec $81
-  dec $81
-  rts
-raisewalls:
-  inc $81
-  inc $81
-  rts
+DrawH:
+	jsr Draw2DotMSpace
+	jsr CNewLine
+	jsr Draw2DotMSpace
+	jsr CNewLine
+	jsr Draw3Dot
+	jsr CNewLine
+	jsr Draw2DotMSpace
+	jsr CNewLine
+	jsr Draw2DotMSpace
 
-pixels:
-  dcb $00,$02,$20,$02,$40,$02,$60,$02
-  dcb $80,$02,$a0,$02,$c0,$02,$e0,$02
-  dcb $00,$03,$20,$03,$40,$03,$60,$03
-  dcb $80,$03,$a0,$03,$c0,$03,$e0,$03
+	jsr ReadjustFor3
 
-walls:
+	rts
+
+DrawI:
+	jsr Draw3Dot
+	jsr CNewLine
+	jsr DrawMiddleDot
+	jsr CNewLine
+	jsr DrawMiddleDot
+	jsr CNewLine
+	jsr DrawMiddleDot
+	jsr CNewLine
+	jsr Draw3Dot
+
+	jsr ReadjustFor3
+
+	rts
+DrawJ:
+	jsr Draw3Dot
+	jsr CNewLine
+	jsr DrawMiddleDot
+	jsr CNewLine
+	jsr DrawMiddleDot
+	jsr CNewLine
+	jsr DrawMiddleDot
+	jsr CNewLine
+	jsr DrawDotDotSpace
+
+	jsr ReadjustFor3
+
+	rts
+DrawK:
+	jsr Draw2DotMSpace
+	jsr CNewLine
+	jsr Draw2DotMSpace
+	jsr CNewLine
+	jsr DrawDotDotSpace
+	jsr CNewLine
+	jsr Draw2DotMSpace
+	jsr CNewLine
+	jsr Draw2DotMSpace
+
+	jsr ReadjustFor3
+
+	rts
+
+DrawL:
+	jsr DrawLeftDot
+	jsr CNewLine
+	jsr DrawLeftDot
+	jsr CNewLine
+	jsr DrawLeftDot
+	jsr CNewLine
+	jsr DrawLeftDot
+	jsr CNewLine
+	jsr Draw3Dot
+
+	jsr ReadjustFor3
+
+	rts
+
+DrawM:
+	rts
+DrawN:
+	rts
+DrawN:
+	rts
+DrawO:
+	rts
+DrawP:
+	rts
+DrawQ:
+	rts
+DrawR:
+	rts
+DrawS:
+	rts
+DrawT:
+	rts
+DrawU:
+	rts
+DrawV:
+	rts
+DrawW:
+	rts
+DrawX:
+	rts
+DrawY:
+	rts
+DrawZ:
+	rts
+
+Draw3Dot:
+	lda text_colour
+	sta ($00,x)
+
+	ldy $00	
+	iny
+	sty $00
+	sta ($00,x)
+
+	iny
+	sty $00
+	sta ($00,x)
+
+	jsr DecrementYBy2
+	clc
+
+	rts
+
+Draw4Dot:
+	lda text_colour
+	sta ($00,x)
+
+	ldy $00	
+	iny
+	sty $00
+	sta ($00,x)
+
+	iny
+	sty $00
+	sta ($00,x)
+
+	iny
+	sty $00
+	sta ($00,x)
+
+	jsr DecrementYBy3
+	clc
+
+	rts
+
+Draw2DotMSpace:
+	lda text_colour
+	sta ($00,x)
+
+	ldy $00
+	iny
+	iny
+	sty $00
+	sta ($00,x)
+
+	jsr DecrementYBy2
+	clc
+	
+	rts
+
+Draw2DotM2Space:
+	lda text_colour
+	sta ($00,x)
+
+	ldy $00
+	iny
+	iny
+	iny
+	sty $00
+	sta ($00,x)
+
+	jsr DecrementYBy3
+	clc
+	
+	rts
+
+DrawLeftDot:
+	lda text_colour
+	sta ($00,x)
+	clc
+
+	rts
+
+DrawSpaceDotSpaceDot:
+	lda text_colour
+	
+	ldy $00
+	iny
+	sty $00
+	sta ($00,x)
+
+	iny
+	iny
+	sty $00
+	sta ($00,x)
+
+	jsr DecrementYBy3
+	clc
+	
+	rts
+
+DrawDotSpaceDotDot:
+	lda text_colour
+	
+	sta ($00,x)
+
+	ldy $00
+	iny
+	iny
+	sty $00
+	sta ($00,x)
+
+	iny
+	sty $00
+	sta ($00,x)
+
+	jsr DecrementYBy3
+	clc
+	
+	rts
+
+DrawDotDotSpace:
+	lda text_colour
+	
+	sta ($00,x)
+
+	ldy $00
+	iny
+	sty $00
+	sta ($00,x)
+
+	dey
+	clc
+	
+	rts
+
+DrawMiddleDot:
+	lda text_colour
+	
+	ldy $00
+	iny
+	sty $00
+	sta ($00,x)
+
+	dey
+	clc
+	
+	rts
+
+DecrementYBy2:
+	dey
+	dey
+
+	sty $00
+	clc
+
+	rts
+
+DecrementYBy3:
+	dey
+	dey
+	dey
+
+	sty $00
+	clc
+	rts
+
+CNewLine:
+	clc
+	tya
+	adc #$20
+	sta $00
+	tay
+	
+	ora #%0001111
+	cmp #%0001111
+	beq SetNewSpaceForward
+	clc
+
+	lda text_colour
+	ldx #0
+
+	rts
+
+SetNewSpaceForward:
+	ldx $01
+	inx
+	stx $01
+	ldx #0
+	clc
+
+	rts
+
+ReadjustFor3:
+	iny
+	iny
+	iny
+	iny
+	tya
+
+	jsr Subtract
+
+	tay
+	sta $00
+
+	ldx #0
+	lda text_colour
+	clc
+
+	rts
+
+ReadjustFor4:
+	iny
+	iny
+	iny
+	iny
+	iny
+	tya
+
+	jsr Subtract
+
+	tay
+	sta $00
+
+	ldx #0
+	lda text_colour
+	clc
+
+	rts
+
+Subtract:
+	clc
+    	sbc #$7f
+	bcc ReturnToOldSpace
+
+	ldx #0
+
+	rts
+
+ReturnToOldSpace:
+	ldx $01
+	dex
+	stx $01
+	ldx #0
+	clc
+
+	rts
+
+SetLine2:
+	ldx #$c0
+	stx $00
+	ldx #0
+	clc
+
+	rts
+
+SetLine3:
+	ldx #$03
+	stx $01
+	ldx #$80
+	stx $00
+	ldx #0
+	clc
+
+	rts
+
+SetLine4:
+	ldx #$04
+	stx $01
+	ldx #$40
+	stx $00
+	ldx #0
+	clc
+
+	rts
+
+SetLine5:
+	ldx #$05
+	stx $01
+	ldx #$00
+	stx $00
+	ldx #0
+	clc
   dcb $d
 {% include end.html %}
